@@ -6,24 +6,24 @@ MENU:{
 
 pizza:{
 "Pizza Margherita":390,
-"Pizza Prosciutto":420,
+"Pizza Prosciutto":390,
 "Pizza Cheese":390,
 "Pizza Veggie Delight":390
 },
 
 dessert:{
-"Tiramisu":120,
-"Panna Cotta":120
+"Tiramisu":350,
+"Panna Cotta":350
 },
 
 drink:{
-"Cola":50,
-"Italian Soda":90,
-"Sparkling Water":50
+"Cola":260,
+"Italian Soda":260,
+"Sparkling Water":150
 },
 
 side:{
-"Wings & Fries Combo":320
+"Wings & Fries Combo":390
 },
 
 set:{
