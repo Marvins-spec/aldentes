@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Sales Dashboard</title>
+
+</head>
+
+<body>
+
+<h1>Al Dente Sales</h1>
+
+<div id="sales"></div>
+
+<script>
+
+async function load(){
+
+let res=await fetch("YOUR_SCRIPT_URL")
+
+let data=await res.json()
+
+document.getElementById("sales").innerText=
+JSON.stringify(data,null,2)
+
+}
+
+load()
+
+</script>
+
+</body>
+</html>

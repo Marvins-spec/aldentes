@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Serve Screen</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const supabase = window.supabase.createClient(
+"https://rfcmjhqxmxbrwguovarl.supabase.co",
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmY21qaHF4bXhicndndW92YXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjI4NTEsImV4cCI6MjA4OTE5ODg1MX0.8enFcMSqkfH0KqsK2txySpnq07lYp9s3b2WMdqcW7NE"
+)
+
+</script>
+
+<style>
+
+body{
+font-family:sans-serif;
+background:#101010;
+color:white;
+margin:0;
+padding:0;
+}
+
+header{
+background:#1c1c1c;
+padding:15px;
+font-size:22px;
+}
+
+#queue{
+padding:20px;
+}
+
+#history{
+padding:20px;
+background:#0b0b0b;
+border-top:2px solid #333;
+}
+
+.order{
+background:#222;
+padding:20px;
+margin-bottom:15px;
+border-radius:10px;
+}
+
+.customer{
+font-size:22px;
+color:#4CAF50;
+}
+
+.item{
+font-size:18px;
+margin:4px 0;
+}
+
+.chef{
+color:#ff9800;
+margin-top:10px;
+}
+
+button{
+margin-top:12px;
+padding:10px 15px;
+border:none;
+border-radius:6px;
+background:#2196F3;
+color:white;
+cursor:pointer;
+}
+
+.queueNumber{
+font-size:18px;
+color:#ccc;
+}
+
+.historyItem{
+background:#1a1a1a;
+padding:15px;
+margin-bottom:10px;
+border-radius:8px;
+}
+
+details summary{
+cursor:pointer;
+font-size:18px;
+color:#aaa;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+🍽 Ready To Serve
+</header>
+
+<div id="queue"></div>
+
+<header>
+📜 Serve History
+</header>
+
+<div id="history"></div>
+
+<script>
+
+function combineItems(items){
+
+let combined={}
+
+for(let i in items){
+
+let name=i.replace("Extra: ","")
+
+if(name.includes("Set")) continue
+
+let qty=items[i].qty
+
+if(!combined[name]) combined[name]=0
+
+combined[name]+=qty
+
+}
+
+return combined
+
+}
+
+function loadServe(){
+
+let orders=JSON.parse(
+supabase.from("orders").select("*")||"[]"
+)
+
+let queue=document.getElementById("queue")
+
+queue.innerHTML=""
+
+let readyOrders=orders
+.filter(o=>o.status==="done")
+.sort((a,b)=>a.time-b.time)
+
+readyOrders.forEach((o,index)=>{
+
+let box=document.createElement("div")
+
+box.className="order"
+
+let combined=combineItems(o.items)
+
+let items=""
+
+for(let food in combined){
+
+items+=`<div class="item">${food} x${combined[food]}</div>`
+
+}
+
+box.innerHTML=`
+
+<div class="queueNumber">
+Queue #${index+1}
+</div>
+
+<div class="customer">
+👤 ${o.customer}
+</div>
+
+${items}
+
+<div class="chef">
+👨‍🍳 ${o.chef}
+</div>
+
+<button onclick="served(${o.id})">
+SERVED
+</button>
+
+`
+
+queue.appendChild(box)
+
+})
+
+}
+
+function loadHistory(){
+
+let orders=JSON.parse(
+localStorage.getItem("orders")||"[]"
+)
+
+let history=document.getElementById("history")
+
+history.innerHTML=""
+
+let servedOrders=orders
+.filter(o=>o.status==="served")
+.sort((a,b)=>b.time-a.time)
+
+servedOrders.forEach((o,index)=>{
+
+let combined=combineItems(o.items)
+
+let items=""
+
+for(let food in combined){
+
+items+=`<div class="item">${food} x${combined[food]}</div>`
+
+}
+
+let box=document.createElement("div")
+
+box.className="historyItem"
+
+box.innerHTML=`
+
+<details>
+
+<summary>
+Order ✔ ${o.customer}
+</summary>
+
+${items}
+
+</details>
+
+`
+
+history.appendChild(box)
+
+})
+
+}
+
+function served(id){
+
+let orders=JSON.parse(
+localStorage.getItem("orders")||"[]"
+)
+
+let order=orders.find(o=>o.id===id)
+
+if(order){
+
+order.status="served"
+
+}
+
+localStorage.setItem(
+"orders",
+JSON.stringify(orders)
+)
+
+loadServe()
+loadHistory()
+
+}
+
+window.addEventListener("storage",function(){
+
+loadServe()
+loadHistory()
+
+})
+
+setInterval(function(){
+
+loadServe()
+loadHistory()
+
+},2000)
+
+loadServe()
+loadHistory()
+
+</script>
+
+</body>
+</html>
