@@ -174,7 +174,7 @@ loginChef()
 
 async function loadOrders(){
 
-let { data: orders, error } = await supabaseClient
+const { data, error } = await supabaseClient
 .from("orders")
 .select("*")
 .order("time",{ascending:true})
@@ -184,21 +184,20 @@ console.log(error)
 return
 }
 
-let board=document.getElementById("orders")
+const board = document.getElementById("orders")
 board.innerHTML=""
 
-orders.forEach((o,index)=>{
+data.forEach((o)=>{
 
 if(o.status==="done") return
 
-let box=document.createElement("div")
-box.className="order"
+let items = o.items
 
-let items = typeof o.items === "string"
-? JSON.parse(o.items)
-: o.items
+if(typeof items === "string"){
+items = JSON.parse(items)
+}
 
-let combined={}
+let html=""
 
 for(let i in items){
 
@@ -206,37 +205,32 @@ let name=i.replace("Extra: ","")
 
 if(name.includes("Set")) continue
 
-let qty=items[i].qty
-
-if(!combined[name]) combined[name]=0
-
-combined[name]+=qty
-
-}
-
-let itemsHTML=""
-
-for(let food in combined){
-
-itemsHTML+=`<div class="item">${food} x${combined[food]}</div>`
+html+=`<div class="item">${name} x${items[i].qty}</div>`
 
 }
 
 let action=""
 
 if(o.status==="waiting"){
-
 action=`<button class="accept" onclick="acceptOrder('${o.id}')">ACCEPT</button>`
-
 }
 
 if(o.status==="cooking"){
-
-action=`<div class="taken">👨‍🍳 ${o.chef} cooking</div>`
-
+action=`<button class="ready" onclick="ready('${o.id}')">READY</button>
+<div class="taken">👨‍🍳 ${o.chef}</div>`
 }
 
-box.innerHTML=`
+board.innerHTML += `
+<div class="order">
+<h2>${o.customer}</h2>
+${html}
+${action}
+</div>
+`
+
+})
+
+}
 
 <h2>Order</h2>
 
