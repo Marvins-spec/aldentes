@@ -344,17 +344,20 @@ popup.style.display="flex"
 
 }
 
-function ready(index){
+async function ready(id){
 
-let orders=JSON.parse(localStorage.getItem("orders")||"[]")
-
-orders[index].status="done"
-
-localStorage.setItem("orders",JSON.stringify(orders))
+await supabaseClient
+.from("orders")
+.update({
+status:"done"
+})
+.eq("id",id)
 
 document.getElementById("popup").style.display="none"
 
 loadOrders()
+
+}
 loadHistory()
 
 }function loadHistory(){
