@@ -7,14 +7,14 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-
 const { createClient } = supabase
 
 const supabaseClient = createClient(
 "https://rfcmjhqxmxbrwguovarl.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmY21qaHF4bXhicndndW92YXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjI4NTEsImV4cCI6MjA4OTE5ODg1MX0.8enFcMSqkfH0KqsK2txySpnq07lYp9s3b2WMdqcW7NE"
+"YOUR_ANON_KEY"
 )
 </script>
+
 <style>
 
 body{
@@ -22,7 +22,6 @@ font-family:sans-serif;
 background:#111;
 color:white;
 margin:0;
-padding:0;
 }
 
 header{
@@ -61,16 +60,6 @@ margin-bottom:15px;
 border-radius:10px;
 }
 
-.order.flash{
-animation:flash 1s ease-in-out 3;
-}
-
-@keyframes flash{
-0%{background:#333;}
-50%{background:#ff9800;}
-100%{background:#333;}
-}
-
 .item{
 font-size:18px;
 margin:5px 0;
@@ -106,31 +95,6 @@ margin-bottom:8px;
 border-radius:6px;
 }
 
-#popup{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.8);
-display:none;
-justify-content:center;
-align-items:center;
-}
-
-.popupContent{
-background:#222;
-padding:30px;
-border-radius:10px;
-width:400px;
-text-align:center;
-}
-
-.popupItem{
-font-size:20px;
-margin:8px 0;
-}
-
 </style>
 </head>
 
@@ -150,23 +114,20 @@ margin:8px 0;
 
 </div>
 
-<div id="popup"></div>
-
 <script>
 
 let chefName=""
-let lastOrderCount=0
 
 function loginChef(){
 
-chefName=prompt("Enter Chef Name")
+chefName = prompt("Enter Chef Name")
 
 if(!chefName){
 loginChef()
 return
 }
 
-document.getElementById("chefName").innerText=chefName
+document.getElementById("chefName").innerText = chefName
 
 }
 
@@ -187,7 +148,7 @@ return
 const board = document.getElementById("orders")
 board.innerHTML=""
 
-data.forEach((o)=>{
+data.forEach(o=>{
 
 if(o.status==="done") return
 
@@ -212,61 +173,35 @@ html+=`<div class="item">${name} x${items[i].qty}</div>`
 let action=""
 
 if(o.status==="waiting"){
+
 action=`<button class="accept" onclick="acceptOrder('${o.id}')">ACCEPT</button>`
+
 }
 
 if(o.status==="cooking"){
-action=`<button class="ready" onclick="ready('${o.id}')">READY</button>
-<div class="taken">👨‍🍳 ${o.chef}</div>`
+
+action=`
+<button class="ready" onclick="ready('${o.id}')">READY</button>
+<div class="taken">👨‍🍳 ${o.chef}</div>
+`
+
 }
 
-board.innerHTML += `
+board.innerHTML+=`
+
 <div class="order">
+
 <h2>${o.customer}</h2>
+
 ${html}
+
 ${action}
+
 </div>
-`
-
-})
-
-}
-
-<h2>Order</h2>
-
-${itemsHTML}
-
-${action}
 
 `
 
-board.appendChild(box)
-
 })
-
-}
-
-autoScrollCheck(orders.length)
-
-function autoScrollCheck(count){
-
-if(count>lastOrderCount){
-
-let ordersDiv=document.getElementById("orders")
-
-ordersDiv.scrollTop=ordersDiv.scrollHeight
-
-let last=ordersDiv.lastChild
-
-if(last){
-
-last.classList.add("flash")
-
-}
-
-}
-
-lastOrderCount=count
 
 }
 
@@ -284,58 +219,6 @@ loadOrders()
 
 }
 
-function openPopup(index){
-
-let orders=JSON.parse(localStorage.getItem("orders")||"[]")
-
-let o=orders[index]
-
-let combined={}
-
-for(let i in o.items){
-
-let name=i.replace("Extra: ","")
-
-if(name.includes("Set")) continue
-
-let qty=o.items[i].qty
-
-if(!combined[name]) combined[name]=0
-
-combined[name]+=qty
-
-}
-
-let items=""
-
-for(let food in combined){
-
-items+=`<div class="popupItem">${food} x${combined[food]}</div>`
-
-}
-
-let popup=document.getElementById("popup")
-
-popup.innerHTML=`
-
-<div class="popupContent">
-
-<h1>Order #${index+1}</h1>
-
-${items}
-
-<button class="ready" onclick="ready(${index})">
-READY
-</button>
-
-</div>
-
-`
-
-popup.style.display="flex"
-
-}
-
 async function ready(id){
 
 await supabaseClient
@@ -345,81 +228,60 @@ status:"done"
 })
 .eq("id",id)
 
-document.getElementById("popup").style.display="none"
-
 loadOrders()
-
-}
 loadHistory()
 
-function loadHistory(){
+}
 
-let orders=JSON.parse(localStorage.getItem("orders")||"[]")
+async function loadHistory(){
 
-let history=document.getElementById("history")
+const { data } = await supabaseClient
+.from("orders")
+.select("*")
+.eq("status","done")
+.order("time",{ascending:false})
+
+const history=document.getElementById("history")
 
 history.innerHTML="<h3>History</h3>"
 
-orders.forEach((o,index)=>{
+data.forEach(o=>{
 
-if(o.status!=="served") return
+let items=o.items
 
-let combined={}
+if(typeof items==="string"){
+items=JSON.parse(items)
+}
 
-for(let i in o.items){
+let html=""
+
+for(let i in items){
 
 let name=i.replace("Extra: ","")
 
 if(name.includes("Set")) continue
 
-let qty=o.items[i].qty
-
-if(!combined[name]) combined[name]=0
-
-combined[name]+=qty
+html+=`<div>${name} x${items[i].qty}</div>`
 
 }
 
-let items=""
+history.innerHTML+=`
 
-for(let food in combined){
+<div class="historyItem">
 
-items+=`<div>${food} x${combined[food]}</div>`
+<b>${o.customer}</b>
 
-}
+${html}
 
-let box=document.createElement("div")
-
-box.className="historyItem"
-
-box.innerHTML=`
-
-<details>
-
-<summary>
-Order #${index+1} ✔ ${o.customer}
-</summary>
-
-${items}
-
-</details>
+</div>
 
 `
 
-history.appendChild(box)
-
 })
 
 }
 
-window.addEventListener("storage",function(){
-
-loadOrders()
-loadHistory()
-
-})
-
-setInterval(function(){
+setInterval(()=>{
 
 loadOrders()
 loadHistory()
@@ -432,4 +294,3 @@ loadHistory()
 </script>
 
 </body>
-</html>
