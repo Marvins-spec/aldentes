@@ -140,6 +140,8 @@ const { data, error } = await supabaseClient
 .select("*")
 .order("time",{ascending:true})
 
+console.log("DATA:", data)
+  
 if(error){
 console.log(error)
 return
