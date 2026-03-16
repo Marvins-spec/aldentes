@@ -143,6 +143,7 @@ const { data, error } = await supabaseClient
 .order("time",{ascending:true})
 
 console.log("DATA:", data)
+console.log("ERROR:",error)
   
 if(error){
 console.log(error)
