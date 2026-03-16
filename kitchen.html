@@ -278,16 +278,15 @@ lastOrderCount=count
 
 }
 
-function acceptOrder(index){
+async function acceptOrder(id){
 
-let orders=JSON.parse(localStorage.getItem("orders")||"[]")
-
-orders[index].status="cooking"
-orders[index].chef=chefName
-
-localStorage.setItem("orders",JSON.stringify(orders))
-
-openPopup(index)
+await supabaseClient
+.from("orders")
+.update({
+status:"cooking",
+chef:chefName
+})
+.eq("id",id)
 
 loadOrders()
 
