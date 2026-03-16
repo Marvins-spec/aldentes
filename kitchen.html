@@ -14,20 +14,6 @@ const supabaseClient = createClient(
 "https://rfcmjhqxmxbrwguovarl.supabase.co",
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmY21qaHF4bXhicndndW92YXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjI4NTEsImV4cCI6MjA4OTE5ODg1MX0.8enFcMSqkfH0KqsK2txySpnq07lYp9s3b2WMdqcW7NE"
 )
-async function loadOrders(){
-
-let { data, error } = await supabaseClient
-.from("orders")
-.select("*")
-.eq("status","waiting")
-.order("time",{ascending:true})
-
-if(error){
-console.log(error)
-return
-}
-renderOrders(data)
-}
 </script>
 <style>
 
@@ -186,12 +172,19 @@ document.getElementById("chefName").innerText=chefName
 
 loginChef()
 
-function loadOrders(){
+async function loadOrders(){
 
-let orders=JSON.parse(supabase.from("orders").select("*")||"[]")
+let { data: orders, error } = await supabaseClient
+.from("orders")
+.select("*")
+.order("time",{ascending:true})
+
+if(error){
+console.log(error)
+return
+}
 
 let board=document.getElementById("orders")
-
 board.innerHTML=""
 
 orders.forEach((o,index)=>{
@@ -201,15 +194,19 @@ if(o.status==="done") return
 let box=document.createElement("div")
 box.className="order"
 
+let items = typeof o.items === "string"
+? JSON.parse(o.items)
+: o.items
+
 let combined={}
 
-for(let i in o.items){
+for(let i in items){
 
 let name=i.replace("Extra: ","")
 
 if(name.includes("Set")) continue
 
-let qty=o.items[i].qty
+let qty=items[i].qty
 
 if(!combined[name]) combined[name]=0
 
@@ -229,7 +226,7 @@ let action=""
 
 if(o.status==="waiting"){
 
-action=`<button class="accept" onclick="acceptOrder(${index})">ACCEPT</button>`
+action=`<button class="accept" onclick="acceptOrder('${o.id}')">ACCEPT</button>`
 
 }
 
@@ -241,7 +238,7 @@ action=`<div class="taken">👨‍🍳 ${o.chef} cooking</div>`
 
 box.innerHTML=`
 
-<h2>Order #${index+1}</h2>
+<h2>Order</h2>
 
 ${itemsHTML}
 
@@ -252,6 +249,8 @@ ${action}
 board.appendChild(box)
 
 })
+
+}
 
 autoScrollCheck(orders.length)
 
