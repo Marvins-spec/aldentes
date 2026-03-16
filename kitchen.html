@@ -14,7 +14,20 @@ const supabaseClient = createClient(
 "https://rfcmjhqxmxbrwguovarl.supabase.co",
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmY21qaHF4bXhicndndW92YXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjI4NTEsImV4cCI6MjA4OTE5ODg1MX0.8enFcMSqkfH0KqsK2txySpnq07lYp9s3b2WMdqcW7NE"
 )
+async function loadOrders(){
 
+let { data, error } = await supabaseClient
+.from("orders")
+.select("*")
+.eq("status","waiting")
+.order("time",{ascending:true})
+
+if(error){
+console.log(error)
+return
+}
+renderOrders(data)
+}
 </script>
 <style>
 
