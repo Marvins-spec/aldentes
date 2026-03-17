@@ -1,73 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>POS Menu</title>
-
-<style>
 body{
 font-family:Arial;
 background:#141414;
 color:white;
 margin:0;
-overflow:hidden;
+overflow:hidden; /* 🔥 ใช้อันนี้แทน */
 }
-
 .posLayout{
 display:flex;
 height:100vh;
 }
 
-/* 🔥 เมนูซ้าย */
 .menu{
 flex:1;
 margin-right:320px;
 padding:20px;
 overflow-y:auto;
-padding-bottom:140px;
+
+padding-bottom:140px; /* 🔥 กัน footer */
 }
 
-/* 🔥 ออเดอร์ขวา */
 .orderPanel{
 position:fixed;
 top:0;
 right:0;
 width:320px;
 height:100vh;
-background:#1c1c1c;
 
 display:flex;
 flex-direction:column;
-padding:15px;
-box-sizing:border-box;
-z-index:999;
+overflow:hidden;
+padding:10px;
 }
 
-.orderPanel h2{
-margin:0 0 10px 0;
-}
-
-/* 🔥 list scroll */
 #orderList{
 flex:1;
 overflow-y:auto;
-min-height:0;
+min-height:0; /* 🔥 สำคัญมาก */
 }
 
-/* 🔥 total ชิดขวา */
 .total{
-text-align:right;
-font-weight:bold;
-padding:10px 0;
-border-top:1px solid #333;
+position:sticky;
+bottom:90px; /* 🔥 สูงเท่า footer */
+background:#1c1c1c;
+padding:15px;
 }
 
-/* 🔥 grid menu */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
 gap:15px;
-width:90%;
+width:90%; /* 🔥 เปลี่ยน */
 }
 
 button{
@@ -75,6 +57,7 @@ margin-top:10px;
 padding:12px;
 border:none;
 border-radius:8px;
+background:#2196F3;
 color:white;
 cursor:pointer;
 font-size:16px;
@@ -87,7 +70,12 @@ width:100%;
 .drink{background:#3498db}
 .side{background:#f1c40f;color:black}
 
-/* 🔥 footer */
+.order-item{
+display:flex;
+justify-content:space-between;
+margin:6px 0;
+}
+
 .posFooter{
 position:fixed;
 bottom:0;
@@ -109,79 +97,68 @@ border-radius:8px;
 font-size:16px;
 }
 
+.posFooter button{
+padding:12px 16px;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+}
+
 .clear{
 background:#555;
+color:white;
 }
 
 .send{
 background:#4CAF50;
+color:white;
 font-weight:bold;
 }
 
-/* 🔥 รายการ */
-.order-item{
-display:flex;
-justify-content:space-between;
-margin:6px 0;
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+display:none;
+justify-content:center;
+align-items:center;
 }
-</style>
-</head>
 
-<body>
+.popup-box{
+background:#2b2b2b;
+padding:30px;
+border-radius:10px;
+}
 
-<div class="posLayout">
+@media (max-width:768px){
 
-<!-- 🔥 MENU -->
-<div class="menu">
-<h2>SET MENU</h2>
+header{
+background:#1c1c1c;
+padding:15px;
+font-size:22px;
+position:sticky;
+top:0;
+z-index:10;
+}
 
-<button class="set">Small Set</button>
-<button class="set">Large Set</button>
+.customer{
+font-size:clamp(18px,2vw,24px);
+color:#4CAF50;
+font-weight:bold;
+}
 
-<h3>Pizza</h3>
-<div class="grid">
-<button class="pizza">Pizza Margherita $390</button>
-<button class="pizza">Pizza Prosciutto $390</button>
-<button class="pizza">Pizza Cheese $390</button>
-<button class="pizza">Pizza Veggie Delight $390</button>
-</div>
+.item{
+font-size:clamp(15px,1.6vw,18px);
+margin:4px 0;
+}
 
-<h3>Side</h3>
-<button class="side">Wings & Fries Combo $390</button>
+.queueNumber{
+font-size:clamp(14px,1.5vw,16px);
+color:#bbb;
+}
 
-<h3>Dessert</h3>
-<div class="grid">
-<button class="dessert">Tiramisu $350</button>
-<button class="dessert">Panna Cotta $350</button>
-</div>
-
-<h3>Drink</h3>
-<div class="grid">
-<button class="drink">Cola $260</button>
-<button class="drink">Italian Soda $260</button>
-<button class="drink">Sparkling Water $150</button>
-</div>
-</div>
-
-<!-- 🔥 ORDER PANEL -->
-<div class="orderPanel">
-<h2>Order</h2>
-
-<div id="orderList">
-<!-- รายการจะมาแสดงตรงนี้ -->
-</div>
-
-<div class="total">Total: 0</div>
-</div>
-
-</div>
-
-<!-- 🔥 FOOTER -->
-<div class="posFooter">
-<input type="text" placeholder="Customer">
-<button class="clear">Clear</button>
-<button class="send">Send Order</button>
-</div>
-
-</body>
-</html>
+}
