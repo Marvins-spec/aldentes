@@ -8,18 +8,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-
 const { createClient } = supabase
 
 const supabaseClient = createClient(
 "https://rfcmjhqxmxbrwguovarl.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmY21qaHF4bXhicndndW92YXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjI4NTEsImV4cCI6MjA4OTE5ODg1MX0.8enFcMSqkfH0KqsK2txySpnq07lYp9s3b2WMdqcW7NE"
+"YOUR_ANON_KEY"
 )
-
 </script>
 
 <style>
-
 body{
 font-family:sans-serif;
 background:#111;
@@ -97,7 +94,6 @@ padding:10px;
 margin-bottom:8px;
 border-radius:6px;
 }
-
 </style>
 </head>
 
@@ -122,7 +118,6 @@ border-radius:6px;
 let chefName=""
 
 function loginChef(){
-
 chefName = prompt("Enter Chef Name")
 
 if(!chefName){
@@ -131,22 +126,19 @@ return
 }
 
 document.getElementById("chefName").innerText = chefName
-
 }
 
 loginChef()
 
+// ===================== LOAD ORDERS =====================
 async function loadOrders(){
 
-const { data } = await supabaseClient
+const { data, error } = await supabaseClient
 .from("orders")
 .select("*")
-.eq("status", "waiting") // 🔥 สำคัญ
+.in("status", ["waiting","cooking"]) // ✅ สำคัญ
 .order("time", { ascending: true })
 
-console.log("DATA:", data)
-console.log("ERROR:",error)
-  
 if(error){
 console.log(error)
 return
@@ -156,8 +148,6 @@ const board = document.getElementById("orders")
 board.innerHTML=""
 
 data.forEach(o=>{
-
-if(o.status==="done") return
 
 let items = o.items
 
@@ -174,45 +164,64 @@ let name=i.replace("Extra: ","")
 if(name.includes("Set")) continue
 
 html+=`<div class="item">${name} x${items[i].qty}</div>`
-
 }
 
 let action=""
 
+// 🟢 WAITING → แสดง ACCEPT
 if(o.status==="waiting"){
 
-action=`<button class="accept" onclick="acceptOrder('${o.id}')">ACCEPT</button>`
-
+action=`
+<button class="accept" onclick="acceptOrder('${o.id}')">
+ACCEPT
+</button>
+`
 }
 
-if(o.status==="cooking"){
+// 🔵 COOKING → แสดงชื่อเชฟ + READY เฉพาะคนรับ
+else if(o.status==="cooking"){
+
+let readyBtn = ""
+
+if(o.chef === chefName){
+readyBtn = `
+<button class="ready" onclick="ready('${o.id}')">
+READY
+</button>
+`
+}
 
 action=`
-<button class="ready" onclick="ready('${o.id}')">READY</button>
 <div class="taken">👨‍🍳 ${o.chef}</div>
+${readyBtn}
 `
-
 }
 
 board.innerHTML+=`
-
 <div class="order">
-
 <h2>${o.customer}</h2>
-
 ${html}
-
 ${action}
-
 </div>
-
 `
 
 })
 
 }
 
+// ===================== ACCEPT =====================
 async function acceptOrder(id){
+
+const { data } = await supabaseClient
+.from("orders")
+.select("status")
+.eq("id", id)
+.single()
+
+if(data.status !== "waiting"){
+alert("Order already taken")
+return
+}
 
 await supabaseClient
 .from("orders")
@@ -226,6 +235,7 @@ loadOrders()
 
 }
 
+// ===================== READY =====================
 async function ready(id){
 
 await supabaseClient
@@ -240,16 +250,21 @@ loadHistory()
 
 }
 
+// ===================== HISTORY =====================
 async function loadHistory(){
 
-const { data } = await supabaseClient
+const { data, error } = await supabaseClient
 .from("orders")
 .select("*")
-.eq("status","served")
+.eq("status","done") // ✅ ใช้ done
 .order("time",{ascending:false})
 
-const history=document.getElementById("history")
+if(error){
+console.log(error)
+return
+}
 
+const history=document.getElementById("history")
 history.innerHTML="<h3>History</h3>"
 
 data.forEach(o=>{
@@ -269,30 +284,23 @@ let name=i.replace("Extra: ","")
 if(name.includes("Set")) continue
 
 html+=`<div>${name} x${items[i].qty}</div>`
-
 }
 
 history.innerHTML+=`
-
 <div class="historyItem">
-
 <b>${o.customer}</b>
-
 ${html}
-
 </div>
-
 `
 
 })
 
 }
 
+// ===================== AUTO REFRESH =====================
 setInterval(()=>{
-
 loadOrders()
 loadHistory()
-
 },2000)
 
 loadOrders()
@@ -301,3 +309,4 @@ loadHistory()
 </script>
 
 </body>
+</html>
