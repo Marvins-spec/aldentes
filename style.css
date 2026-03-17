@@ -12,9 +12,11 @@ height:100vh;
 
 .menu{
 flex:1;
-margin-right:320px;
+margin-right:320px; /* ต้องเท่าความกว้าง order */
 padding:20px;
 overflow-y:auto;
+padding-bottom:140px;
+}
 
 padding-bottom:140px; /* 🔥 กัน footer */
 }
@@ -22,14 +24,14 @@ padding-bottom:140px; /* 🔥 กัน footer */
 .orderPanel{
 position:fixed;
 top:0;
-right:0;
+right:0; /* ต้องเป็นตัวนี้ */
 width:320px;
 height:100vh;
 
 display:flex;
 flex-direction:column;
-overflow:hidden;
 padding:10px;
+box-sizing:border-box; /* 🔥 กัน padding ดันออก */
 }
 
 #orderList{
