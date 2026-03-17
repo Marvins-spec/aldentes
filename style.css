@@ -8,12 +8,6 @@ height:100vh;
 padding-bottom:110px;
 }
 
-.menu{
-width:60%;
-padding:20px;
-overflow:auto;
-}
-
 .posLayout{
 display:flex;
 height:100vh;
