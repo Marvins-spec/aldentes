@@ -15,12 +15,12 @@ overflow:auto;
 
 .order{
 background:#222;
-padding:20px;
-margin-bottom:15px;
-border-radius:10px;
-max-width:600px;
-margin-left:auto;
-margin-right:auto;
+padding:18px;
+border-radius:12px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+min-height:160px;
 }
 
 .grid{
@@ -30,14 +30,14 @@ gap:10px;
 }
 
 button{
-margin-top:12px;
-padding:14px 18px;
+margin-top:10px;
+padding:12px;
 border:none;
 border-radius:8px;
 background:#2196F3;
 color:white;
 cursor:pointer;
-font-size:18px;
+font-size:16px;
 width:100%;
 }
 
@@ -91,20 +91,28 @@ border-radius:10px;
 @media (max-width:768px){
 
 header{
-font-size:18px;
-padding:12px;
+background:#1c1c1c;
+padding:15px;
+font-size:22px;
+position:sticky;
+top:0;
+z-index:10;
 }
 
 .customer{
-font-size:20px;
+font-size:clamp(18px,2vw,24px);
+color:#4CAF50;
+font-weight:bold;
 }
 
 .item{
-font-size:16px;
+font-size:clamp(15px,1.6vw,18px);
+margin:4px 0;
 }
 
 .queueNumber{
-font-size:16px;
+font-size:clamp(14px,1.5vw,16px);
+color:#bbb;
 }
 
 }
