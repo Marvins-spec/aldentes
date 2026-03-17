@@ -244,8 +244,8 @@ async function loadHistory(){
 const { data } = await supabaseClient
 .from("orders")
 .select("*")
-.eq("status","done")
-.order("time",{ascending:false})
+.eq("status","waiting")
+.order("time",{ascending:true})
 
 const history=document.getElementById("history")
 
