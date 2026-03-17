@@ -3,24 +3,20 @@ font-family:Arial;
 background:#141414;
 color:white;
 margin:0;
-display:flex;
-height:100vh;
-padding-bottom:110px;
+overflow:hidden; /* 🔥 ใช้อันนี้แทน */
 }
-
 .posLayout{
 display:flex;
 height:100vh;
 }
 
 .menu{
+flex:1;
 margin-right:320px;
 padding:20px;
-height:100vh;
 overflow-y:auto;
 
-width:100%;        /* 🔥 เพิ่ม */
-box-sizing:border-box;
+padding-bottom:140px; /* 🔥 กัน footer */
 }
 
 .orderPanel{
@@ -29,26 +25,33 @@ top:0;
 right:0;
 width:320px;
 height:100vh;
-background:#1c1c1c;
-padding:20px;
-border-left:2px solid #333;
 
 display:flex;
 flex-direction:column;
-
-overflow:hidden; /* สำคัญ */
+overflow:hidden;
+padding:10px;
 }
 
 #orderList{
 flex:1;
 overflow-y:auto;
+min-height:0; /* 🔥 สำคัญมาก */
+}
+
+.total{
+flex-shrink:0;
+padding:15px 0;
+border-top:1px solid #333;
+font-size:18px;
+font-weight:bold;
+background:#1c1c1c;
 }
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); /* 🔥 เปลี่ยน */
+grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
 gap:15px;
-width:90%; /* 🔥 เพิ่ม */
+width:90%; /* 🔥 เปลี่ยน */
 }
 
 button{
@@ -73,14 +76,6 @@ width:100%;
 display:flex;
 justify-content:space-between;
 margin:6px 0;
-}
-
-.total{
-padding:15px 0;
-border-top:1px solid #333;
-font-size:18px;
-font-weight:bold;
-background:#1c1c1c;
 }
 
 .posFooter{
