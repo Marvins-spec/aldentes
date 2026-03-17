@@ -1,70 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-
-<title>Al Dente POS</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-
-const { createClient } = supabase
-
-const supabaseClient = createClient(
-"https://rfcmjhqxmxbrwguovarl.supabase.co",
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmY21qaHF4bXhicndndW92YXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjI4NTEsImV4cCI6MjA4OTE5ODg1MX0.8enFcMSqkfH0KqsK2txySpnq07lYp9s3b2WMdqcW7NE"
-)
-
-</script>
-
-<script src="config.js"></script>
-
-</head>
-
-<body>
-
-<div class="menu">
-
-<h2>SET MENU</h2>
-
-<div class="grid">
-<button class="set" onclick="startSet('Small Set')">Small Set</button>
-<button class="set" onclick="startSet('Large Set')">Large Set</button>
-</div>
-
-<h2>Pizza</h2>
-<div id="pizzaMenu" class="grid"></div>
-
-<h2>Side</h2>
-<div id="sideMenu" class="grid"></div>
-
-<h2>Dessert</h2>
-<div id="dessertMenu" class="grid"></div>
-
-<h2>Drink</h2>
-<div id="drinkMenu" class="grid"></div>
-
-</div>
-
 <div class="order">
 <div class="posLayout">
 
+<div class="menuArea">
+<!-- เมนูอาหารทั้งหมด -->
+</div>
   <!-- ซ้าย: เมนู -->
   <div class="menu">
 
+<div class="order">
+<h2>Order</h2>
     <h2>SET MENU</h2>
     <div class="grid">
       <button class="set" onclick="startSet('Small Set')">Small Set</button>
       <button class="set" onclick="startSet('Large Set')">Large Set</button>
     </div>
 
+<div id="orderList"></div>
     <h2>Pizza</h2>
     <div id="pizzaMenu" class="grid"></div>
 
+<div class="total">
+Total: <span id="total">0</span>
+</div>
     <h2>Side</h2>
     <div id="sideMenu" class="grid"></div>
 
+</div>
     <h2>Dessert</h2>
     <div id="dessertMenu" class="grid"></div>
 
@@ -73,259 +34,17 @@ const supabaseClient = createClient(
 
   </div>
 
-<!-- ขวา: Order -->
-<div class="orderPanel">
+  <!-- ขวา: Order -->
+  <div class="orderPanel">
 
-<h2>Order</h2>
+    <h2>Order</h2>
 
-<div id="orderList"></div>
+    <div id="orderList"></div>
 
-<div class="total">
-Total: <span id="total">0</span>
-</div>
+    <div class="total">
+      Total: <span id="total">0</span>
+    </div>
 
-</div>
-
-</div>
-
-
-<div class="posFooter">
-
-<input id="customer" placeholder="Customer">
-
-<button class="clear" onclick="clearOrder()">
-Clear
-</button>
-
-<button class="send" onclick="sendOrder()">
-Send Order
-</button>
+  </div>
 
 </div>
-<!-- Pizza Popup -->
-
-<div class="popup" id="pizzaPopup">
-<div class="popup-box">
-
-<h2>Choose Pizza</h2>
-
-<div id="pizzaSelect" class="grid"></div>
-
-</div>
-</div>
-
-<!-- Dessert Popup -->
-
-<div class="popup" id="dessertPopup">
-<div class="popup-box">
-
-<h2>Choose Dessert</h2>
-
-<div id="dessertSelect" class="grid"></div>
-
-</div>
-</div>
-
-<script>
-
-let order={}
-let total=0
-let setType=null
-let selectedPizza=null
-let buildingSet=false
-
-function renderMenus(){
-
-renderCategory("pizzaMenu",CONFIG.MENU.pizza,"pizza")
-renderCategory("sideMenu",CONFIG.MENU.side,"side")
-renderCategory("dessertMenu",CONFIG.MENU.dessert,"dessert")
-renderCategory("drinkMenu",CONFIG.MENU.drink,"drink")
-
-renderSelect("pizzaSelect",CONFIG.MENU.pizza,choosePizza)
-renderSelect("dessertSelect",CONFIG.MENU.dessert,chooseDessert)
-
-}
-
-function renderCategory(id,data,className){
-
-let div=document.getElementById(id)
-
-for(let item in data){
-
-let btn=document.createElement("button")
-
-btn.className=className
-
-btn.innerText=item+" $"+data[item]
-
-btn.onclick=()=>addItem(item,data[item])
-
-div.appendChild(btn)
-
-}
-
-}
-
-function renderSelect(id,data,func){
-
-let div=document.getElementById(id)
-
-for(let item in data){
-
-let btn=document.createElement("button")
-
-btn.innerText=item
-
-btn.onclick=()=>func(item)
-
-div.appendChild(btn)
-
-}
-
-}
-
-function addItem(name,price){
-
-let itemName=name
-
-// ถ้าไม่ได้เพิ่มจาก set ให้เป็น Extra
-if(!buildingSet && !name.includes("Set")){
-itemName="Extra: "+name
-}
-
-if(!order[itemName]){
-
-order[itemName]={
-qty:0,
-price:price
-}
-
-}
-
-order[itemName].qty++
-
-renderOrder()
-
-}
-
-function renderOrder(){
-
-let list=document.getElementById("orderList")
-
-list.innerHTML=""
-
-total=0
-
-for(let i in order){
-
-let o=order[i]
-
-let div=document.createElement("div")
-
-div.className="order-item"
-
-div.innerHTML=i+" x"+o.qty+" <span>"+(o.qty*o.price)+"</span>"
-
-list.appendChild(div)
-
-total+=o.qty*o.price
-
-}
-
-document.getElementById("total").innerText=total
-
-}
-
-function startSet(type){
-
-setType=type
-buildingSet=true
-
-document.getElementById("pizzaPopup").style.display="flex"
-
-}
-
-function choosePizza(pizza){
-
-selectedPizza=pizza
-
-document.getElementById("pizzaPopup").style.display="none"
-
-document.getElementById("dessertPopup").style.display="flex"
-
-}
-
-function chooseDessert(dessert){
-
-document.getElementById("dessertPopup").style.display="none"
-
-if(setType=="Small Set"){
-
-addItem("Small Set",CONFIG.MENU.set["Small Set"])
-addItem(selectedPizza,0)
-addItem(dessert,0)
-addItem("Cola",0)
-
-}
-
-if(setType=="Large Set"){
-
-addItem("Large Set",CONFIG.MENU.set["Large Set"])
-addItem(selectedPizza,0)
-addItem("Wings & Fries Combo",0)
-addItem(dessert,0)
-addItem("Cola",0)
-
-}
-
-buildingSet=false
-
-}
-
-function clearOrder(){
-
-order={}
-renderOrder()
-
-}
-
-async function sendOrder(){
-
-let customer = document.getElementById("customer").value.trim()
-
-if(customer === ""){
-alert("Enter customer name")
-return
-}
-
-let { error } = await supabaseClient
-.from("orders")
-.insert([{
-id: Date.now(),
-customer: customer,
-time: Date.now(),
-items: JSON.stringify(order),
-status: "waiting",
-chef: null
-}])
-
-if(error){
-console.log(error)
-alert("Error sending order")
-return
-}
-
-alert("Order Sent")
-
-clearOrder()
-order = {}
-document.getElementById("customer").value=""
-
-}
-
-renderMenus()
-
-</script>
-
-</body>
-</html>
