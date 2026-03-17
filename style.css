@@ -39,12 +39,9 @@ min-height:0; /* 🔥 สำคัญมาก */
 }
 
 .total{
-flex-shrink:0;
-padding:15px 0;
-border-top:1px solid #333;
-font-size:18px;
-font-weight:bold;
-background:#1c1c1c;
+background:red;
+position:sticky;
+bottom:0;
 }
 
 .grid{
