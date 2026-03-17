@@ -16,7 +16,11 @@ height:100vh;
 .menu{
 margin-right:320px;
 padding:20px;
+height:100vh;
 overflow-y:auto;
+
+width:100%;        /* 🔥 เพิ่ม */
+box-sizing:border-box;
 }
 
 .orderPanel{
@@ -42,8 +46,9 @@ overflow-y:auto;
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-gap:10px;
+grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); /* 🔥 เปลี่ยน */
+gap:15px;
+width:100%; /* 🔥 เพิ่ม */
 }
 
 button{
