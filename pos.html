@@ -50,20 +50,41 @@ const supabaseClient = createClient(
 <div class="order">
 <div class="posLayout">
 
-<div class="menuArea">
-<!-- เมนูอาหารทั้งหมด -->
-</div>
+  <!-- ซ้าย: เมนู -->
+  <div class="menu">
 
-<div class="order">
-<h2>Order</h2>
+    <h2>SET MENU</h2>
+    <div class="grid">
+      <button class="set" onclick="startSet('Small Set')">Small Set</button>
+      <button class="set" onclick="startSet('Large Set')">Large Set</button>
+    </div>
 
-<div id="orderList"></div>
+    <h2>Pizza</h2>
+    <div id="pizzaMenu" class="grid"></div>
 
-<div class="total">
-Total: <span id="total">0</span>
-</div>
+    <h2>Side</h2>
+    <div id="sideMenu" class="grid"></div>
 
-</div>
+    <h2>Dessert</h2>
+    <div id="dessertMenu" class="grid"></div>
+
+    <h2>Drink</h2>
+    <div id="drinkMenu" class="grid"></div>
+
+  </div>
+
+  <!-- ขวา: Order -->
+  <div class="orderPanel">
+
+    <h2>Order</h2>
+
+    <div id="orderList"></div>
+
+    <div class="total">
+      Total: <span id="total">0</span>
+    </div>
+
+  </div>
 
 </div>
 
