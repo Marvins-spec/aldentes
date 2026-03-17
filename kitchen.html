@@ -138,10 +138,11 @@ loginChef()
 
 async function loadOrders(){
 
-const { data, error } = await supabaseClient
+const { data } = await supabaseClient
 .from("orders")
 .select("*")
-.order("time",{ascending:true})
+.eq("status", "waiting") // 🔥 สำคัญ
+.order("time", { ascending: true })
 
 console.log("DATA:", data)
 console.log("ERROR:",error)
@@ -244,8 +245,8 @@ async function loadHistory(){
 const { data } = await supabaseClient
 .from("orders")
 .select("*")
-.eq("status","waiting")
-.order("time",{ascending:true})
+.eq("status","served")
+.order("time",{ascending:false})
 
 const history=document.getElementById("history")
 
